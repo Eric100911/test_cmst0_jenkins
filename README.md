@@ -8,13 +8,14 @@ The pipeline is supported by `cmsbot`, which runs on `cmsbuild` machines and can
 
 Upon pull request to `user/repo`, to initiate the test, one need to type any comment with one line "@cmsbot please test", which triggers the `cmsbot` to run the test. The contents in bash variable `COMMENT` will be tranferred back to the GitHub pull request as a separate comment.
 
-## Configuring
+## Configuring the Pipeline
 
 ### Register the User Repository on `cms-sw/cmsbot `
 
-1. Fork the repo `cms-sw/cmsbot `, create directory `repos/USER_NAME/REPO_NAME`.
-
+1. Fork the repo `cms-sw/cmsbot `, create directory `repos/<user>/<repo>`.
 2. Create a config file `repo_config.py` in the directory. You may refer to the one provided in this repo or see also other examples in `cms-sw/cmsbot/repos`.
+
+At this point, we still need a Webhook token to allow the GitHub Webhook to talk to Jenkins. This will be configured in the next part.
 
 ### Create GitHub Webhook
 
@@ -29,6 +30,8 @@ Upon pull request to `user/repo`, to initiate the test, one need to type any com
         - Issues, Issue comment, Pull request 
         - Pushes (for push based events)
     - Once you have created the webhook then please encrypt your secret by running `curl -d 'TOKEN=your-secret' https://cmssdt.cern.ch/SDT/cgi-bin/encrypt_github_token` and add `GITHUB_WEBHOOK_TOKEN=encrypted-token` in the `repos/<user>/<repo>/repo_config.py` file.
+
+3. Once the secret is set up in the `repo_config.py` file,  one can simply commit and create a pull request from your forked version of `cmsbot` to `cms-sw/cmsbot`. Once the pull request is approved, the Jenkins job will also be created. 
 
 > This section is mostly borrowed from `cms-sw/cmsbot/repos/README.md ` .
 >
