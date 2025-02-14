@@ -14,34 +14,7 @@ Upon pull request to `user/repo`, to initiate the test, one need to type any com
 
 1. Fork the repo `cms-sw/cmsbot `, create directory `repos/USER_NAME/REPO_NAME`.
 
-2. Create a config file `repo_config.py` in the directory. You may configure as below (see also: other examples in `cms-sw/cmsbot/repos`) 
-
-    ```python
-    from cms_static import get_jenkins
-    from os.path import basename, dirname, abspath
-    
-    # GH read/write token: Use default ~/.github-token-cmsbot
-    GH_TOKEN = "~/.github-token-cmsbot"
-    # GH readonly token: Use default ~/.github-token-readonly
-    GH_TOKEN_READONLY = "~/.github-token-readonly"
-    CONFIG_DIR = dirname(abspath(__file__))
-    # GH bot user: Use default cmsbot
-    CMSBUILD_USER = "cmsbot"
-    GH_REPO_ORGANIZATION = basename(dirname(CONFIG_DIR))
-    GH_REPO_FULLNAME = "dmwm/T0"
-    CREATE_EXTERNAL_ISSUE = False
-    # cmsbot will not have admin. The webhook is added by repo admin.
-    ADD_WEB_HOOK = False
-    # Token is to be set up by repo admin.
-    GITHUB_WEBHOOK_TOKEN = "U2FsdGVkX1/yGRI4T5Xuk69SIVHNLg1fgE1+BU1eiRemkuUdkmqIZD0ICUVaEuO2"
-    REQUEST_PROCESSOR = "simple-cms-bot"
-    TRIGGER_PR_TESTS = []
-    VALID_WEB_HOOKS = ["issue_comment"]
-    WEBHOOK_PAYLOAD = True
-    # Jenkins CI server: User default http://cms-jenkins.cern.ch:8080/cms-jenkins
-    JENKINS_SERVER = get_jenkins("cms-jenkins")
-    
-    ```
+2. Create a config file `repo_config.py` in the directory. You may refer to the one provided in this repo or see also other examples in `cms-sw/cmsbot/repos`.
 
 ### Create GitHub Webhook
 
@@ -63,68 +36,9 @@ Upon pull request to `user/repo`, to initiate the test, one need to type any com
 
 ### Set Up `shell` Script for Testing
 
-The test script is set up in the web page of the Jenkins job and has a general framework as below (see also examples in `cms-sw/cmsbot/repos/`):
+The test script is set up in the web page of the Jenkins job and has a general framework as shown in `test.sh` (see also examples in `cms-sw/cmsbot/repos/`). Note that the returned comment always takes the value of the bash variable `COMMENT`.
 
-```bash
-#Run your code
-
-# A simple script to test the collatz conjecture code from a GitHub PR
-
-# Extract the PR number from environment variable.
-# We do have PULL_REQUEST as the ID of the PR, also REPOSITORY as the user/repo
-
-if [ -n "${PULL_REQUEST}" ] ; then
-  PR_ID=${PULL_REQUEST}
-else 
-  exit -1
-fi
-
-if [ -n "${REPOSITORY}" ] ; then
-  REPO_URL="https://github.com/${REPOSITORY}.git"
-else 
-  echo "REPOSITORY is not set. Extracting from the PR URL."
-  REPOSITORY=$(echo ${REPO_URL} | sed -r -e 's,^.*github.com\/(.*)\.git$,\1,')
-fi
-
-# Extract repo name from link
-REPO_NAME=$(echo ${REPOSITORY} | sed -r -e 's,^.*\/([^\/]+)$,\1,')
-echo "Repo name: ${REPO_NAME}"
-
-# Clone the repo
-git clone ${REPO_URL}
-# Prepare necessary env variables
-
-# Check if the repo was cloned
-if [ ! -d ${REPO_NAME} ] ; then
-  echo "Failed to clone ${REPO_URL}" >> err.txt
-else
-  echo "Successfully cloned ${REPO_URL}"
-  cd ${REPO_NAME}
-  # Switch to the PR branch
-  git fetch origin "pull/${PR_ID}/head:pr-${PR_ID}"
-  git checkout "pr-${PR_ID}"  
-  # >>> Conduct your test for the PR here. <<<
-
-  # >>>       End of test for the PR       <<<
-  # Return to the workspace
-  cd ..
-fi
-
-#Create a file with comment to be posted on GH PR
-set +x
-echo "+1" > comment.txt
-echo "Job finished. Compilete build log is available at ${BUILD_URL}/console" >> comment.txt
-
-if [ -e ${WORKSPACE}/comment.txt ] ; then
-  COMMENT=$(cat comment.txt | python3 -c 'import sys,zlib,base64;msg=sys.stdin.read().strip();print(base64.encodebytes(zlib.compress(msg.encode())).decode("ascii", "ignore"))' | sed ':a;N;$!ba;s/\n/@N@/g')
-  echo "COMMENT=b64:${COMMENT}" >> post-gh-comment
-fi
-
-```
-
-A more elegant way may be including the script for testing as part of the repo to be tested. With this, one can simply execute the dedicated test script in the area indicated above and avoid the trouble of frequently modifying the script in Jenkins web page.
-
-
+An elegant way may be including the script for testing as part of the repo to be tested. With this, one can simply execute the dedicated test script in the area indicated above and avoid the trouble of frequently modifying the script in Jenkins web page.
 
 
 
