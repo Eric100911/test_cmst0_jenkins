@@ -34,7 +34,7 @@ Upon pull request to `user/repo`, to initiate the test, one need to type any com
 >
 > In the case with T0 CI/CD, we will not add `cmsbot` as `admin`. 
 
-> ### Set Up `shell` Script for Testing
+### Set Up `shell` Script for Testing
 
 The test script is set up in the web page of the Jenkins job and has a general framework as shown in `test.sh` (see also examples in `cms-sw/cmsbot/repos/`). Note that the returned comment always takes the value of the bash variable `COMMENT`.
 
