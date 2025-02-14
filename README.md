@@ -31,7 +31,7 @@ At this point, we still need a Webhook token to allow the GitHub Webhook to talk
         - Pushes (for push based events)
     - Once you have created the webhook then please encrypt your secret by running `curl -d 'TOKEN=your-secret' https://cmssdt.cern.ch/SDT/cgi-bin/encrypt_github_token` and add `GITHUB_WEBHOOK_TOKEN=encrypted-token` in the `repos/<user>/<repo>/repo_config.py` file.
 
-3. Once the secret is set up in the `repo_config.py` file,  one can simply commit and create a pull request from your forked version of `cmsbot` to `cms-sw/cmsbot`. Once the pull request is approved, the Jenkins job will also be created. 
+3. Once the secret is set up in the `repo_config.py` file,  one can simply commit and create a pull request from your forked version of `cmsbot` to `cms-sw/cmsbot`. Once the pull request is approved, the Jenkins pipeline will also be created. 
 
 > This section is mostly borrowed from `cms-sw/cmsbot/repos/README.md ` .
 >
@@ -39,7 +39,7 @@ At this point, we still need a Webhook token to allow the GitHub Webhook to talk
 
 ### Set Up `shell` Script for Testing
 
-The test script is set up in the web page of the Jenkins job and has a general framework as shown in `test.sh` (see also examples in `cms-sw/cmsbot/repos/`). Note that the returned comment always takes the value of the bash variable `COMMENT`.
+The test script is set up in the web page of the Jenkins pipeline and has a general framework as shown in `test.sh` (see also examples in `cms-sw/cmsbot/repos/`). Note that the returned comment always takes the value of the bash variable `COMMENT`.
 
 An elegant way may be including the script for testing as part of the repo to be tested. With this, one can simply execute the dedicated test script in the area indicated above and avoid the trouble of frequently modifying the script in Jenkins web page.
 
